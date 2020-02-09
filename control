@@ -1,6 +1,6 @@
 Package: com.captinc.youtubedarkmodesync
 Name: YouTubeDarkModeSync
-Version: 1.0
+Version: 1.1
 Depends: firmware (>=13.0), mobilesubstrate
 Author: Capt Inc <teamcaptinc@gmail.com>
 Maintainer: Capt Inc <teamcaptinc@gmail.com>

@@ -1,49 +1,42 @@
 #import "Tweak.h"
 
-UIWindow *keyWindow() { //keyWindow was deprecated in iOS 13, so here's a replacement
-    UIWindow *foundWindow = nil;
-    NSArray *windows = [[UIApplication sharedApplication] windows];
-    for (UIWindow *window in windows) {
-        if (window.isKeyWindow) {
-            foundWindow = window;
-            break;
-        }
-    }
-    return foundWindow;
+%hook YTMainWindow
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection { //this method is called when iOS 13's dark mode is toggled
+    %orig;
+    YTAppDelegate *delegate = (YTAppDelegate *)[[UIApplication sharedApplication] delegate];
+    [delegate startYouTubeDarkModeSync];
 }
+%end
 
-void syncAppearance(UIViewController *sender) { //If necessary, this changes YouTube's built-in appearance to iOS 13's current appearance
-    YTAppViewController *YTAppVC = (YTAppViewController *)keyWindow().rootViewController;
+%hook YTAppDelegate
+ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions { //ensures the correct appearance is displayed even if dark mode was toggled when YouTube wasn't open
+    BOOL result = %orig;
+    [self startYouTubeDarkModeSync];
+    return result;
+}
+%new
+- (void)startYouTubeDarkModeSync { //if necessary, change YouTube's built-in appearance to iOS 13's current appearance
+    YTAppViewController *YTAppVC = (YTAppViewController *)self.window.rootViewController;
     YTPageStyleController *darkModeController = MSHookIvar<YTPageStyleController *>(YTAppVC, "_pageStyleController"); //YTPageStyleController is an ivar of YTAppViewController, not an @property
     
-    CAAccountViewController *rootCercubeVC; //Get the instance of the root Cercube VC
+    CAAccountViewController *rootCercubeVC; //get the instance of Cercube's root view controller
     if ([YTAppVC.childModalViewController isKindOfClass:%c(CANavigationViewController)]) {
         CANavigationViewController *nav = (CANavigationViewController *)YTAppVC.childModalViewController;
         rootCercubeVC = (CAAccountViewController *)[nav.viewControllers firstObject];
     }
     
-    if (sender.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-        [darkModeController setPageStyle:1]; //Pass 1 to change to YouTube's built-in dark mode
-        [rootCercubeVC dismissViewControllerAnimated:YES completion:nil]; //Compatibility with CercubeDarkMode
-        //Cercube's menus do not change to light/dark mode immediately, so we have to dismiss the root Cercube VC for changes to take effect
+    if (YTAppVC.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+        [darkModeController setPageStyle:1]; //pass 1 to change to YouTube's built-in dark mode
+        //compatibility with CercubeDarkMode
+        if (rootCercubeVC) { //nil check
+            [rootCercubeVC dismissViewControllerAnimated:YES completion:nil]; //Cercube's menus do not update their appearance immediately, so we have to dismiss the root Cercube VC for changes to take effect
+        }
     }
-    else if (sender.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight) {
-        [darkModeController setPageStyle:0]; //Pass 0 to change to YouTube's built-in light mode
-        [rootCercubeVC dismissViewControllerAnimated:YES completion:nil];
+    else if (YTAppVC.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight) {
+        [darkModeController setPageStyle:0]; //pass 0 to change to YouTube's built-in light mode
+        if (rootCercubeVC) {
+            [rootCercubeVC dismissViewControllerAnimated:YES completion:nil];
+        }
     }
-}
-
-%hook UIViewController
-- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection { //This method is called when the user toggles iOS 13's dark mode
-    %orig;
-    syncAppearance(self);
-}
-%end
-
-%hook YTAppDelegate //Tells YouTube to sync its appearance if the user toggled iOS 13's dark mode when YouTube was not open
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions {
-    %orig;
-    syncAppearance(keyWindow().rootViewController);
-    return %orig;
 }
 %end
