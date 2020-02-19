@@ -1,15 +1,18 @@
+@interface YTAppViewController : UIViewController
+@property NSString *darkModeRespectsWhat;
+@property UIViewController *childModalViewController;
+- (void)viewDidLoad;
+- (void)dealloc;
+- (void)startYouTubeDarkModeSync;
+- (void)changeToDarkOrLightMode:(NSInteger)newMode;
+@end
+
 @interface YTMainWindow : UIWindow
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection;
 @end
 
 @interface YTAppDelegate : UIResponder
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions;
-- (void)startYouTubeDarkModeSync;
 - (UIWindow *)window;
-@end
-
-@interface YTAppViewController : UIViewController
-@property UIViewController *childModalViewController;
 @end
 
 @interface YTPageStyleController : NSObject //this class controls YouTube's built-in dark mode
@@ -19,5 +22,8 @@
 @interface CANavigationViewController : UINavigationController
 @end
 
-@interface CAAccountViewController : UIViewController //the root Cercube view controller
+@interface CAAccountViewController : UIViewController
+@end
+
+@interface NSDistributedNotificationCenter : NSNotificationCenter
 @end

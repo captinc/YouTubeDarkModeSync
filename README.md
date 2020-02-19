@@ -1,15 +1,15 @@
-# YouTubeDarkModeSync v1.1
-Toggle YouTube's built-in dark mode with iOS 13's dark mode
+# YouTubeDarkModeSync v1.2
+Toggle YouTube's built-in dark mode with iOS 13's dark mode, DarkModeToggle, and Noctis
 
-Compatible with iOS 13.0+
+Compatible with iOS 11.0+
 
 Repo: [https://captinc.github.io](https://captinc.github.io)
 
-[Direct .deb download](https://github.com/captinc/YouTubeDarkModeSync/releases/download/v1.1/com.captinc.youtubedarkmodesync_1.1_iphoneos-arm.deb)
+[Direct .deb download](https://github.com/captinc/YouTubeDarkModeSync/releases/download/v1.2/com.captinc.youtubedarkmodesync_1.2_iphoneos-arm.deb)
 
 [Reddit post](https://www.reddit.com/r/jailbreak/comments/ergrue/release_youtubedarkmodesync_toggle_youtubes)
 
-Note: YouTube v15.03.1 added this tweak's features into the stock YouTube app. However, this tweak is still fully functional on older versions of YouTube as well as the latest version
+Note - as of YouTube v15.03.1, stock YouTube toggles with iOS 13's dark mode. However, this tweak is still fully functional if you want support for DarkModeToggle/Noctis/iOS 12
 
 # How to compile
 1. [Install theos](https://github.com/theos/theos/wiki/Installation-macOS) on your Mac
