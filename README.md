@@ -1,4 +1,4 @@
-# YouTubeDarkModeSync v1.3
+# YouTubeDarkModeSync v1.3 
 Toggle YouTube's built-in dark mode with iOS 13's dark mode, DarkModeToggle, and Noctis
 
 Compatible with iOS 11.0+
