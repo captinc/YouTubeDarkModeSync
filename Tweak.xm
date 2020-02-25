@@ -10,9 +10,9 @@
     else {
         NSFileManager *fileManager = [NSFileManager defaultManager];
         //if on iOS 12 or older and DarkModeToggle is installed, respect DarkModeToggle
-        if ([fileManager fileExistsAtPath:@"/Library/MobileSubstrate/DynamicLibraries/DarkModeToggleCCAlert.dylib"]) {
+        if ([fileManager fileExistsAtPath:@"/Library/MobileSubstrate/DynamicLibraries/DarkModeToggleSB.dylib"]) {
             self.darkModeRespectsWhat = @"DarkModeToggle";
-            [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(startYouTubeDarkModeSync) name:@"com.captinc.darkmodetoggle.toggled" object:nil];
+            [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(startYouTubeDarkModeSync) name:@"com.captinc.darkmodetoggle.stateChanged" object:nil];
         }
         //but if DarkModeToggle is not installed and Noctis12 is, respect Noctis12
         else if ([fileManager fileExistsAtPath:@"/Library/MobileSubstrate/DynamicLibraries/Noctis12.dylib"]) {
@@ -35,10 +35,10 @@
 - (void)startYouTubeDarkModeSync { //match YouTube's appearance to the current state of what "parent" to respect
     if (@available(iOS 13, *)) {
         if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-            [self changeToDarkOrLightMode:1];
+            [self changeToDarkOrLightMode:3];
         }
         else if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight) {
-            [self changeToDarkOrLightMode:0];
+            [self changeToDarkOrLightMode:2];
         }
     }
     else {
@@ -50,10 +50,10 @@
             }
 
             if ([state isEqualToString:@"dark"]) {
-                [self changeToDarkOrLightMode:1];
+                [self changeToDarkOrLightMode:3];
             }
             else if ([state isEqualToString:@"light"]) {
-                [self changeToDarkOrLightMode:0];
+                [self changeToDarkOrLightMode:2];
             }
         }
         else if ([self.darkModeRespectsWhat isEqualToString:@"Noctis12"]) {
@@ -61,10 +61,10 @@
             BOOL state = [(NSNumber *)[prefs objectForKey:@"enabled"] boolValue];
 
             if (state) {
-                [self changeToDarkOrLightMode:1];
+                [self changeToDarkOrLightMode:3];
             }
             else {
-                [self changeToDarkOrLightMode:0];
+                [self changeToDarkOrLightMode:2];
             }
         }
     }
@@ -72,7 +72,7 @@
 %new
 - (void)changeToDarkOrLightMode:(NSInteger)newMode {
     YTPageStyleController *darkModeController = MSHookIvar<YTPageStyleController *>(self, "_pageStyleController"); //YTPageStyleController is an ivar of YTAppViewController, not an @property
-    [darkModeController setPageStyle:newMode]; //pass 1 to change to YouTube's built-in dark mode. pass 0 to change to light mode
+    darkModeController.appThemeSetting = newMode; //pass 2 to change to YouTube's built-in light mode. pass 3 to change to dark mode
     
     //compatibility with CercubeDarkMode
     CAAccountViewController *rootCercubeVC;
